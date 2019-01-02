@@ -62,3 +62,12 @@ typings/
 
 # PyCharm files
 .idea/
+
+# Database files
+*.db
+
+# Python
+*.pyc
+
+data/
+proto.py
