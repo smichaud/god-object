@@ -1,13 +1,5 @@
 import os
-from flask import (
-    Flask,
-    jsonify,
-    render_template,
-    send_from_directory,
-    request,
-    redirect,
-    url_for,
-)
+from flask import Flask, jsonify, render_template, send_from_directory, request
 from werkzeug.utils import secure_filename
 
 APP_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -15,6 +7,7 @@ STATIC_FOLDER = os.path.join(APP_DIR, "../frontend/build/static")
 TEMPLATE_FOLDER = os.path.join(APP_DIR, "../frontend/build/")
 UPLOAD_FOLDER = os.path.join(APP_DIR, "../data")
 ALLOWED_EXTENSIONS = set(["jpg", "jpeg"])
+
 
 app = Flask(__name__, static_folder=STATIC_FOLDER, template_folder=TEMPLATE_FOLDER)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -28,7 +21,7 @@ def favicon():
 
 
 @app.route("/api/photo", methods=["POST"])
-def upload_file():
+def post_photo():
     if request.method == "POST":
         if "file" not in request.files:
             return jsonify({"info": "No 'file' in 'request.files'"})
@@ -44,19 +37,24 @@ def upload_file():
             return jsonify({"info": "Invalid extension"})
 
 
-def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+@app.route("/api/photos/", methods=["GET"])
+def get_photos(filename):
+    return jsonify({})
 
 
-@app.route("/api/greeting")
-def hello_world():
-    return "Welcome to the Showcase!"
+@app.route("/photos/<path:filename>", methods=["GET"])
+def get_photo(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def index(path):
     return render_template("index.html")
+
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 if __name__ == "__main__":

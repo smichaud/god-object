@@ -8,17 +8,18 @@ import cv2
 HOST_IP = "http://172.16.20.100:5000"
 API_PATH = "/api/photo"
 URL = HOST_IP + API_PATH
+VIDEO_DEVICE = 0
 
 # Basically only need to upload images to the "server"
 # Could get the server for setting update... get before next post or simply return params in the post response
 def main(argv):
-    time_in_seconds_between_frames = 5
-    max_images_count = 3
+    time_in_seconds_between_frames = 10
+    max_images_count = 50
     images_count = 0
 
     start_time = time.time()
     last_post_time = start_time
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture(VIDEO_DEVICE)
     while images_count < max_images_count:
         current_time = time.time()
         if current_time - last_post_time > time_in_seconds_between_frames:
