@@ -1,7 +1,7 @@
 import os
 from flask import (
     Flask,
-    flash,
+    jsonify,
     render_template,
     send_from_directory,
     request,
@@ -29,20 +29,19 @@ def favicon():
 
 @app.route("/api/photo", methods=["POST"])
 def upload_file():
-    print("/api/photo called")
     if request.method == "POST":
-        print("/api/photo called with POST")
         if "file" not in request.files:
-            print("No 'file' in 'request.files'")
-            return redirect(request.url)
+            return jsonify({"info": "No 'file' in 'request.files'"})
+
         file = request.files["file"]
         if file.filename == "":
-            print("No filename")
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
+            return jsonify({"info": "No filename"})
+        elif file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-            return redirect(url_for("upload_file", filename=filename))
+            return jsonify({"info": "Success"})
+        else:
+            return jsonify({"info": "Invalid extension"})
 
 
 def allowed_file(filename):

@@ -1,18 +1,42 @@
 import sys
+import os
 import time
+import datetime
 import requests
+import cv2
 
-HOST_IP = "http://0.0.0.0:5000"
+HOST_IP = "http://172.16.20.100:5000"
 API_PATH = "/api/photo"
 URL = HOST_IP + API_PATH
 
 # Basically only need to upload images to the "server"
+# Could get the server for setting update... get before next post or simply return params in the post response
 def main(argv):
-    last_post_time = time.time()
-    file = open("/home/smichaud/Desktop/tux.jpg", "rb")
-    files = {"file": file}
-    response = requests.post(URL, files=files)
-    print(response.status_code, response.reason)
+    time_in_seconds_between_frames = 5
+    max_images_count = 3
+    images_count = 0
+
+    start_time = time.time()
+    last_post_time = start_time
+    cam = cv2.VideoCapture(0)
+    while images_count < max_images_count:
+        current_time = time.time()
+        if current_time - last_post_time > time_in_seconds_between_frames:
+            images_count = images_count + 1
+            last_post_time = time.time()
+
+            s, img = cam.read()
+            formatted_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
+            filename = formatted_datetime + ".jpg"
+            filepath = "../data_device/" + filename
+            cv2.imwrite(filepath, img)
+
+            file = open(filepath, "rb")
+            files = {"file": file}
+            response = requests.post(URL, files=files)
+            response_data = response.json()
+
+            os.remove(filepath)
 
 
 if __name__ == "__main__":
