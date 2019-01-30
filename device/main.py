@@ -19,23 +19,27 @@ def main(argv):
 
     start_time = time.time()
     last_post_time = start_time
-    cam = cv2.VideoCapture(VIDEO_DEVICE)
+    camera_capture = cv2.VideoCapture(VIDEO_DEVICE)
+    camera_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    camera_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
     while images_count < max_images_count:
         current_time = time.time()
         if current_time - last_post_time > time_in_seconds_between_frames:
             images_count = images_count + 1
             last_post_time = time.time()
 
-            s, img = cam.read()
+            s, img = camera_capture.read()
             formatted_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
             filename = formatted_datetime + ".jpg"
             filepath = "../data_device/" + filename
             cv2.imwrite(filepath, img)
 
+            print("Posting: ", filename)
             file = open(filepath, "rb")
             files = {"file": file}
             response = requests.post(URL, files=files)
             response_data = response.json()
+            print("Response: ", response_data)
 
             os.remove(filepath)
 

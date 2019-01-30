@@ -1,6 +1,8 @@
 import os
+from glob import glob
 from flask import Flask, jsonify, render_template, send_from_directory, request
 from werkzeug.utils import secure_filename
+from flask_cors import CORS
 
 APP_DIR = os.path.abspath(os.path.dirname(__file__))
 STATIC_FOLDER = os.path.join(APP_DIR, "../frontend/build/static")
@@ -11,6 +13,7 @@ ALLOWED_EXTENSIONS = set(["jpg", "jpeg"])
 
 app = Flask(__name__, static_folder=STATIC_FOLDER, template_folder=TEMPLATE_FOLDER)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+CORS(app)
 
 
 @app.route("/favicon.ico")
@@ -38,8 +41,13 @@ def post_photo():
 
 
 @app.route("/api/photos/", methods=["GET"])
-def get_photos(filename):
-    return jsonify({})
+def get_photos():
+    filenames = []
+    for filename in glob("/home/smichaud/Workspace/showcase/data/*.jpg"):
+        filenames.append(os.path.basename(filename))
+
+    filenames.sort(reverse=True)
+    return jsonify({"filenames": filenames})
 
 
 @app.route("/photos/<path:filename>", methods=["GET"])
