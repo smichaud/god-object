@@ -69,5 +69,5 @@ typings/
 # Python
 *.pyc
 
-data/
+data*/
 proto.py
