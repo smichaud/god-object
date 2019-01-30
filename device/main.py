@@ -18,7 +18,7 @@ def main(argv):
     images_count = 0
 
     start_time = time.time()
-    last_post_time = start_time
+    last_post_time = 0
     camera_capture = cv2.VideoCapture(VIDEO_DEVICE)
     camera_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     camera_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
