@@ -13,6 +13,7 @@ VIDEO_DEVICE = 0
 # Basically only need to upload images to the "server"
 # Could get the server for setting update... get before next post or simply return params in the post response
 def main(argv):
+    print("Starting acquisition...")
     time_in_seconds_between_frames = 10
     max_images_count = 50
     images_count = 0
@@ -26,7 +27,7 @@ def main(argv):
         current_time = time.time()
         if current_time - last_post_time > time_in_seconds_between_frames:
             images_count = images_count + 1
-            last_post_time = time.time()
+            last_post_time = current_time
 
             s, img = camera_capture.read()
             formatted_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
